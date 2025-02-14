@@ -1,5 +1,5 @@
 # ESCHER_RECON3D
-
+The project is being carried out in a JupyterLab using Python and its corresponding tools/libraries/packages.
 
 ## INPUT DATA from GEO database
 
