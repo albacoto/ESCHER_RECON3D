@@ -33,10 +33,10 @@ Use sbml format for working with COBRApy
 BUT ESCHER works with json
 
 ## INSTALL ESCHER
- ``pip install "escher[notebook]"``
+ ``pip install "escher[notebook]"`` in the conda enviornment that we want
 
+Instead of working this out in a jupyter notebook we will do it in Visual Studio Code. 
 
-conda install -c conda-forge nodejs
-jupyter lab build
-
-conda install -c conda-forge jupyterlab_widgets
+1. In the VS Code terminal, activate the Conda environment with Escher
+2. Press Cmd + Shift + P (Mac) to open the VS Code Command Palette --> "Python: Select Interpreter" and click on it.
+3. Find and select your Conda environment (Jupyter).
