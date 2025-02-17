@@ -33,12 +33,19 @@ Use sbml format for working with COBRApy
 BUT ESCHER works with json
 
 ## INSTALL ESCHER
+Newest jupyter notebook is somwhere higher than 7. and that does not work with nbesxtension, so one approach to follow so the installation works, is to downgrade jupyter notebook to a version below 7.
+
+``pip install "notebook<7"``
+
+``pip install escher
+jupyter nbextension install --py escher --sys-prefix
+jupyter nbextension enable --py escher --sys-prefix``
+
+Then we can start a Jupyter Notebook and test Escher:
+``from escher import Builder
+builder = Builder()
+builder``
+
+
+
  ``pip install "escher[notebook]"`` in the conda enviornment that we want
-
-Instead of working this out in a jupyter notebook we will do it in Visual Studio Code. 
-
-1. In the VS Code terminal, activate the Conda environment with Escher
-2. Press Cmd + Shift + P (Mac) to open the VS Code Command Palette --> "Python: Select Interpreter" and click on it.
-3. Find and select your Conda environment (Jupyter).
-
-THE PROBLEM WAS THAT jupyter notebook v7 did not work with nbesxtensions, so i had to downgrade jupyter notebook to a version below 7.
