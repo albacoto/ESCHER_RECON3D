@@ -35,7 +35,11 @@ BUT ESCHER works with json
 ## INSTALL ESCHER
 Newest jupyter notebook is somwhere higher than 7. and that does not work with nbesxtension, so one approach to follow so the installation works, is to downgrade jupyter notebook to a version below 7.
 
-``pip install "notebook<7"``
+```
+pip install escher
+pip install "notebook<7"
+```
+
 
 ```
 pip install escher   
