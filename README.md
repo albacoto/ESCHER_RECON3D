@@ -39,9 +39,7 @@ Newest jupyter notebook is somwhere higher than 7. and that does not work with n
 
 ```
 pip install escher   
-
 jupyter nbextension install --py escher --sys-prefix
-
 jupyter nbextension enable --py escher --sys-prefix
 ```
 
