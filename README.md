@@ -37,17 +37,20 @@ Newest jupyter notebook is somwhere higher than 7. and that does not work with n
 
 ``pip install "notebook<7"``
 
-``pip install escher   
+```
+pip install escher   
 
 jupyter nbextension install --py escher --sys-prefix
 
-
-jupyter nbextension enable --py escher --sys-prefix``
+jupyter nbextension enable --py escher --sys-prefix
+```
 
 Then we can start a Jupyter Notebook and test Escher:
-``from escher import Builder
+```
+from escher import Builder
 builder = Builder()
-builder``
+builder
+```
 
 
 
