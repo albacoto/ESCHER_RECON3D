@@ -61,6 +61,7 @@ We need a map and a model to make escher work. I created the model in a jupyter 
 
 Now I have the sbml2escher that will help me convert .xml file to .json file to have the map.
 
+pip install mygene ??
 
 
 
