@@ -54,6 +54,14 @@ builder = Builder()
 builder
 ```
 
+We need a map and a model to make escher work. I created the model in a jupyter notebook but the map is a bit more tricky
+
+## To create the map
+```curl -O https://raw.githubusercontent.com/opencobra/escher/master/py/io/sbml2escher.py```
+
+Now I have the sbml2escher that will help me convert .xml file to .json file to have the map.
 
 
- ``pip install "escher[notebook]"`` in the conda enviornment that we want
+
+
+
