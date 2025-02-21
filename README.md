@@ -56,12 +56,12 @@ builder
 
 We need a map and a model to make escher work. I created the model in a jupyter notebook but the map is a bit more tricky
 
-## To create the map
+## To create the map with sbml2escher
 ```curl -O https://raw.githubusercontent.com/opencobra/escher/master/py/io/sbml2escher.py```
 
-Now I have the sbml2escher that will help me convert .xml file to .json file to have the map.
+That helps convert an .xml file to a .json file and obtain the map.
 
-pip install mygene ??
+Anyways the approach I followed because I did not have any node positions nor pathway connections --> manually create a patwya layout in the Escher Web Tool (the escher maps that are already created do not contain relevant or the information for the reactions I need).
 
 
 
