@@ -64,5 +64,5 @@ That helps convert an .xml file to a .json file and obtain the map.
 Anyways the approach I followed because I did not have any node positions nor pathway connections --> manually create a patwya layout in the Escher Web Tool (the escher maps that are already created do not contain relevant or the information for the reactions I need).
 
 
-
+We need to validate the map before following to the visualization step with Builder.
 
