@@ -72,9 +72,14 @@ We need to validate the map before following to the visualization step with Buil
 
 
 ## TO CONECT THE SERVER WITH JUPYTER NOTEBOOK
-```jupyter notebook --no-browser --port=8888```
 
-and copy the link provided in the terminal
+```ssh -L 8887:localhost:8887 tbm613@thorcomp01fl.unicph.domain```
+
+Put password and once inside run:
+
+```jupyter notebook --no-browser --port=8887```
+
+and copy the link provided in the terminal.
 
 
 
