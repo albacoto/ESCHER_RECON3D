@@ -71,4 +71,10 @@ We need to validate the map before following to the visualization step with Buil
 ```python -m escher.validate new_map.json```
 
 
+## TO CONECT THE SERVER WITH JUPYTER NOTEBOOK
+```jupyter notebook --no-browser --port=8888```
+
+and copy the link provided in the terminal
+
+
 
