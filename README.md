@@ -76,6 +76,7 @@ We need to validate the map before following to the visualization step with Buil
 Connect first the VPN.
 
 ```ssh -Y tbm613@thorcomp01fl.unicph.domain```
+
 Put on the password
 
 
