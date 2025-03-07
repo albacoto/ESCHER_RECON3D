@@ -71,8 +71,15 @@ We need to validate the map before following to the visualization step with Buil
 ```python -m escher.validate new_map.json```
 
 
-## TO CONECT THE SERVER WITH JUPYTER NOTEBOOK
+## SERVER CONNECTION
 
+Connect first the VPN.
+
+```ssh -Y tbm613@thorcomp01fl.unicph.domain```
+Put on the password
+
+
+### JUPYTER NOTEBOOK
 ```ssh -L 8887:localhost:8887 tbm613@thorcomp01fl.unicph.domain```
 
 Put password and once inside run:
