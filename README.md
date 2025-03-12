@@ -90,4 +90,8 @@ Put password and once inside run:
 and copy the link provided in the terminal.
 
 
+### RSTUDIO
+```ssh -L 8787:localhost:8787 tbm613@thorcomp01fl.unicph.domain```
 
+Put password and run on the browser:
+localhost:8787
