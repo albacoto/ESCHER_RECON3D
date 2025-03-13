@@ -1,25 +1,27 @@
-#Load libraries
+# Load libraries
 library(Seurat)
 library(SeuratDisk)
 library(dplyr)
 library(hdf5r)
 
-#Load metadata
+# Load metadata
 metadata <- read.csv("/people/tbm613/filtered_metadata.csv", stringsAsFactors = FALSE)
 head(metadata)
 
 colnames(metadata)[which(names(metadata) == "HTO.barcode")] <- "Barcode"
 
-#Load scRNA data (for GE)
+# Load scRNA data (for GE)
 expression_data <- Read10X_h5("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch1Channel1/outs/filtered_feature_bc_matrix.h5")
 names(expression_data)
 rna_counts <- expression_data[["Gene Expression"]]
 str(rna_counts)
 
-#Create seurat object
+# Create seurat object
 seurat_obj <- CreateSeuratObject(counts = rna_counts)
 
 seurat_obj
 head(seurat_obj@meta.data)
 head(colnames(seurat_obj))
 
+# Standarize barcodes for matching
+seurat_obj <- RenameCells(seurat_obj, new.names = gsub("-1$", "", colnames(seurat_obj)))
