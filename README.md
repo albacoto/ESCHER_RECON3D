@@ -111,7 +111,7 @@ or if installing it from conda in a conda environment:
 
 2. ```conda create -n r_env -c conda-forge r-base=4.4 r-essentials -y```
 
-3. ```conda install -c conda-forge r-seurat -y```
+3. ```conda install -c conda-forge r-seurat -y``` // install seurat inside R
 
 
 
