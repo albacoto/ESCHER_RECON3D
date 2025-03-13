@@ -15,3 +15,6 @@ expression_data <- Read10X_h5("/people/gjl413/projects/psychENCODE/data/SZBDMult
 names(expression_data)
 rna_counts <- expression_data[["Gene Expression"]]
 str(rna_counts)
+
+#Create seurat object
+seurat_obj <- CreateSeuratObject(counts = rna_counts)
