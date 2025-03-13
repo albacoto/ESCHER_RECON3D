@@ -95,3 +95,9 @@ and copy the link provided in the terminal.
 
 Put password and run on the browser:
 localhost:8787
+
+or in case we need the newest version I can work with R 4.4.2 from the server:
+
+```module load R/4.4.2```
+
+
