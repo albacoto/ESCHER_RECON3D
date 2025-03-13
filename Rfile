@@ -1,6 +1,14 @@
+#Load libraries
+library(Seurat)
+library(SeuratDisk)
+library(dplyr)
+library(hdf5r)
+
+#Load metadata
 metadata <- read.csv("/people/tbm613/filtered_metadata.csv", stringsAsFactors = FALSE)
 head(metadata)
 
 colnames(metadata)[which(names(metadata) == "HTO.barcode")] <- "Barcode"
 
-expression_data <- Read10X_h5("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch1Channel1/outs/cellbender_filtered.h5")
+#Load scRNA data (for GE)
+h5file <- H5File$new("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch1Channel1/outs/cellbender_filtered.h5", mode = "r")
