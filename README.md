@@ -105,3 +105,13 @@ or in case we need the newest version I can work with R 4.4.2 from the server:
 ```module load R/4.4.2```
 
 
+or if installing it from conda in a conda environment:
+
+1. activate the conda environment
+
+2. ```conda create -n r_env -c conda-forge r-base=4.4 r-essentials -y```
+
+3. ```conda install -c conda-forge r-seurat -y```
+
+
+
