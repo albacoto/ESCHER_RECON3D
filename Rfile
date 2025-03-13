@@ -1,2 +1,4 @@
 metadata <- read.csv("/people/tbm613/filtered_metadata.csv", stringsAsFactors = FALSE)
 head(metadata)
+
+colnames(metadata)[which(names(metadata) == "HTO.barcode")] <- "Barcode"
