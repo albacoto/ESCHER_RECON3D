@@ -18,3 +18,8 @@ str(rna_counts)
 
 #Create seurat object
 seurat_obj <- CreateSeuratObject(counts = rna_counts)
+
+seurat_obj
+head(seurat_obj@meta.data)
+head(colnames(seurat_obj))
+
