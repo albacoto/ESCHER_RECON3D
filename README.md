@@ -99,7 +99,9 @@ localhost:8787
 or in case we need the newest version I can work with R 4.4.2 from the server:
 
 ```module load gcc/13.2.0```
+
 ```module load openjdk/20.0.0```
+
 ```module load R/4.4.2```
 
 
