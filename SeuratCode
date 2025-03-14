@@ -37,6 +37,17 @@ colnames(sparse_matrix) <- barcodes
 # Close the HDF5 file
 h5file$close()
 
+
+# Ensure unique feature (gene) names
+unique_features <- make.unique(features)
+
+# Assign unique feature names as rownames in sparse matrix
+rownames(sparse_matrix) <- unique_features
+
+# Verify that there are no duplicates
+sum(duplicated(rownames(sparse_matrix)))  # Should return 0
+
+
 # Create a Seurat object
 toc <- CreateSeuratObject(counts = sparse_matrix, project = batch_name)
 
