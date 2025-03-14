@@ -1,7 +1,7 @@
-# Load required libraries
-library(Seurat)
+# Load necessary libraries
 library(hdf5r)
-library(Matrix)  
+library(Matrix)
+library(Seurat)
 
 # Define the batch name
 batch_name <- "Batch1Channel1"
@@ -14,52 +14,59 @@ h5_path <- paste0("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/Cellra
 # Open the HDF5 file
 h5file <- H5File$new(h5_path, mode = "r")
 
-# Extract raw gene expression data
+# Extract barcodes, features, and feature types
 barcodes <- h5file[["matrix/barcodes"]][]
 features <- h5file[["matrix/features/name"]][]
+feature_types <- h5file[["matrix/features/feature_type"]][]
+
+# Convert feature types to character (they may be stored as raw bytes)
+feature_types <- as.character(feature_types)
+
+# Extract raw count matrix components
 data <- h5file[["matrix/data"]][]
 indices <- h5file[["matrix/indices"]][]
 indptr <- h5file[["matrix/indptr"]][]
 shape <- h5file[["matrix/shape"]][]
 
-# Convert to sparse matrix format
-sparse_matrix <- Matrix::sparseMatrix(
-  i = indices + 1,  # R is 1-based, HDF5 is 0-based
+# Convert to a sparse matrix
+sparse_matrix <- sparseMatrix(
+  i = indices + 1,  # R uses 1-based indexing
   p = indptr,
   x = data,
   dims = shape
 )
 
-# Assign row names (genes) and column names (barcodes)
-rownames(sparse_matrix) <- features
+# Assign row and column names
+rownames(sparse_matrix) <- make.unique(features)  # Ensure unique gene names
 colnames(sparse_matrix) <- barcodes
 
 # Close the HDF5 file
 h5file$close()
 
+# --- Extract Gene Expression Data ---
+gene_indices <- which(feature_types == "Gene Expression")
 
-# Ensure unique feature (gene) names
-unique_features <- make.unique(features)
-
-# Assign unique feature names as rownames in sparse matrix
-rownames(sparse_matrix) <- unique_features
-
-# Verify that there are no duplicates
-sum(duplicated(rownames(sparse_matrix)))  # Should return 0
-
-
-# Create a Seurat object
-toc <- CreateSeuratObject(counts = sparse_matrix, project = batch_name)
-
-# Check if Antibody Capture data exists (may not exist in your dataset)
-if ("Antibody Capture" %in% names(h5file[["matrix"]])) {
-  df2 <- as.data.frame(h5file[["matrix/Antibody Capture"]][])
+if (length(gene_indices) > 0) {
+  gene_matrix <- sparse_matrix[gene_indices, ]  # Subset only Gene Expression data
   
-  # Process cell hashing
-  cellhash <- CreateSeuratObject(counts = df2, project = "cell_hashing", assay = "HTO")
+  # Create a Seurat object for Gene Expression
+  toc <- CreateSeuratObject(counts = gene_matrix, project = batch_name)
+} else {
+  stop("No Gene Expression data found!")
+}
+
+# --- Extract Antibody Capture Data ---
+hto_indices <- which(feature_types == "Antibody Capture")
+
+if (length(hto_indices) > 0) {
+  hto_matrix <- sparse_matrix[hto_indices, ]  # Subset only Antibody Capture data
+  
+  # Create Seurat object for HTO data
+  cellhash <- CreateSeuratObject(counts = hto_matrix, project = "cell_hashing", assay = "HTO")
   cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
   cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
-  
+
+  # Extract HTO assignment
   ht <- as.data.frame(cellhash$hash.ID)
 } else {
   warning(paste("No Antibody Capture data found for", batch_name))
@@ -70,10 +77,11 @@ if ("Antibody Capture" %in% names(h5file[["matrix"]])) {
 saveRDS(ht, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
 saveRDS(toc, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
 
-# Reload to check
+# Reload and check saved data
 toc <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
 ht <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
 
+# Load metadata
 metadata <- readRDS("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/full.CMC.metadata.rds")
 
 # Print outputs for verification
