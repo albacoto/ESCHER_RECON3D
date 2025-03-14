@@ -25,3 +25,8 @@ head(colnames(seurat_obj))
 
 # Standarize barcodes for matching
 seurat_obj <- RenameCells(seurat_obj, new.names = gsub("-1$", "", colnames(seurat_obj)))
+
+# Check if metadata barcodes are substrings of Seurat barcodes
+sum(metadata$Barcode %in% substr(colnames(seurat_obj), 1, 8))
+
+# If the result = 0 barcodes are in a different format. 
