@@ -1,0 +1,48 @@
+library(Seurat)
+library(tidyverse)
+library(cowplot)
+library(patchwork)
+library(WGCNA)
+library(hdWGCNA)
+library(dplyr)
+library(readxl)
+library(conos)
+library(SoupX)
+
+ht_list <- list() # Store the information mapping cell_barcode to hashID (or sampleID or individualID)
+toc_list <- list() # Store the raw count matrix
+
+batch_names <- c("Batch1", "Batch2", "Batch3") # Replace with actual batch names
+
+for (i in seq_along(batch_names)) {
+  batch_name <- batch_names[i]
+  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/", 
+                 batch_name, 
+                 "/outs/raw_feature_bc_matrix.h5")
+
+  counts <- Read10X_h5(filename = path)
+
+  # Extract raw gene expression and antibody capture (HTO) data
+  toc_list[[i]] <- as.data.frame(counts$`Gene Expression`)
+  df2 <- as.data.frame(counts$`Antibody Capture`)
+
+  # Process cell hashing
+  cellhash <- CreateSeuratObject(counts = df2, project = "cell_hashing", assay = "HTO")
+  cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
+  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
+
+  ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
+}
+
+# Save results
+saveRDS(ht_list, file = "/maps/projects/thor/people/qdz247/thesis/CMC/hashtag.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/qdz247/thesis/CMC/toc.rds")
+
+# Reload to check
+toc_list <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/toc.rds")
+ht_list <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/QC_cell_meta.rds")
+
+metadata <- readRDS("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/full.CMC.metadata.rds")
+
+ht_list
+metadata
