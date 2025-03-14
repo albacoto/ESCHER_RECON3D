@@ -1,5 +1,7 @@
+# Load required libraries
 library(Seurat)
-library(dplyr)
+library(hdf5r)
+library(Matrix)  
 
 # Define the batch name
 batch_name <- "Batch1Channel1"
@@ -7,17 +9,40 @@ batch_name <- "Batch1Channel1"
 # Define the correct path
 h5_path <- paste0("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/", 
                   batch_name, 
-                  "/outs/cellbender_filtered.h5")
+                  "/outs/raw_feature_bc_matrix.h5")
 
-# Read the data from the .h5 file
-counts <- Read10X_h5(filename = h5_path)
+# Open the HDF5 file
+h5file <- H5File$new(h5_path, mode = "r")
 
-# Extract raw gene expression and antibody capture (HTO) data
-toc <- as.data.frame(counts$`Gene Expression`)
+# Extract raw gene expression data
+barcodes <- h5file[["matrix/barcodes"]][]
+features <- h5file[["matrix/features/name"]][]
+data <- h5file[["matrix/data"]][]
+indices <- h5file[["matrix/indices"]][]
+indptr <- h5file[["matrix/indptr"]][]
+shape <- h5file[["matrix/shape"]][]
 
-# Check if Antibody Capture data exists
-if ("Antibody Capture" %in% names(counts)) {
-  df2 <- as.data.frame(counts$`Antibody Capture`)
+# Convert to sparse matrix format
+sparse_matrix <- Matrix::sparseMatrix(
+  i = indices + 1,  # R is 1-based, HDF5 is 0-based
+  p = indptr,
+  x = data,
+  dims = shape
+)
+
+# Assign row names (genes) and column names (barcodes)
+rownames(sparse_matrix) <- features
+colnames(sparse_matrix) <- barcodes
+
+# Close the HDF5 file
+h5file$close()
+
+# Create a Seurat object
+toc <- CreateSeuratObject(counts = sparse_matrix, project = batch_name)
+
+# Check if Antibody Capture data exists (may not exist in your dataset)
+if ("Antibody Capture" %in% names(h5file[["matrix"]])) {
+  df2 <- as.data.frame(h5file[["matrix/Antibody Capture"]][])
   
   # Process cell hashing
   cellhash <- CreateSeuratObject(counts = df2, project = "cell_hashing", assay = "HTO")
@@ -31,14 +56,15 @@ if ("Antibody Capture" %in% names(counts)) {
 }
 
 # Save results
-saveRDS(ht, file = "/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_Batch1Channel1.rds")
-saveRDS(toc, file = "/maps/projects/thor/people/qdz247/thesis/CMC/toc_Batch1Channel1.rds")
+saveRDS(ht, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
+saveRDS(toc, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
 
 # Reload to check
-toc <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/toc_Batch1Channel1.rds")
-ht <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_Batch1Channel1.rds")
+toc <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
+ht <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
 
 metadata <- readRDS("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/full.CMC.metadata.rds")
 
-ht
-metadata
+# Print outputs for verification
+print(ht)
+print(metadata)
