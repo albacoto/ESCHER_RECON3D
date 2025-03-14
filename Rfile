@@ -6,9 +6,9 @@ library(hdf5r)
 
 # Load metadata
 metadata <- read.csv("/people/tbm613/filtered_metadata.csv", stringsAsFactors = FALSE)
+colnames(metadata)[which(names(metadata) == "HTO.barcode")] <- "Barcode"
 head(metadata)
 
-colnames(metadata)[which(names(metadata) == "HTO.barcode")] <- "Barcode"
 
 # Load scRNA data (for GE)
 expression_data <- Read10X_h5("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch1Channel1/outs/filtered_feature_bc_matrix.h5")
