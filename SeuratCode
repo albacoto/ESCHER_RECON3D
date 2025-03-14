@@ -55,6 +55,22 @@ if (length(gene_indices) > 0) {
   stop("No Gene Expression data found!")
 }
 
+----
+# Remove cells with zero HTO counts
+hto_matrix <- hto_matrix[, Matrix::colSums(hto_matrix) > 0]
+
+# Check dimensions after filtering
+dim(hto_matrix)
+
+
+# Remove cells with only zero counts in all HTO features
+hto_matrix <- hto_matrix[, Matrix::colSums(hto_matrix) > 0]
+
+# Check the number of remaining cells after filtering
+dim(hto_matrix)
+
+----
+
 # --- Extract Antibody Capture Data ---
 hto_indices <- which(feature_types == "Antibody Capture")
 
@@ -64,7 +80,9 @@ if (length(hto_indices) > 0) {
   # Create Seurat object for HTO data
   cellhash <- CreateSeuratObject(counts = hto_matrix, project = "cell_hashing", assay = "HTO")
   cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
-  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
+
+  # Lowering the threshold to allow more positive cells
+  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.3)
 
   # Extract HTO assignment
   ht <- as.data.frame(cellhash$hash.ID)
