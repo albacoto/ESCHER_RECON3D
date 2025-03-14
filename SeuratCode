@@ -1,13 +1,5 @@
 library(Seurat)
-library(tidyverse)
-library(cowplot)
-library(patchwork)
-library(WGCNA)
-library(hdWGCNA)
 library(dplyr)
-library(readxl)
-library(conos)
-library(SoupX)
 
 ht_list <- list() # Store the information mapping cell_barcode to hashID (or sampleID or individualID)
 toc_list <- list() # Store the raw count matrix
