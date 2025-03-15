@@ -105,3 +105,38 @@ metadata <- readRDS("/maps/projects/thor/people/gjl413/projects/psychENCODE/data
 # Print outputs for verification
 print(ht)
 print(metadata)
+
+
+
+
+--------------------------
+ht_list <- list() #store the information map cell_barcode to hashID (or sampleID or indiviualID)
+toc_list <- list() # store the raw count matrix
+
+for (i in 1:17) {
+  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/CellRangerOutput/CMC/Set", 
+                 1, 
+                 "/outs/filtered_feature_bc_matrix/")
+  counts <- Read10X(data.dir = path)
+  
+  
+  toc_list[[i]] <- as.data.frame(counts$`Gene Expression`)
+  df2 <- as.data.frame(counts$`Antibody Capture`)
+  
+  
+  cellhash <- CreateSeuratObject(counts = df2,project = "cell_hashing", assay = "HTO")
+  cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
+  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
+  
+  
+  ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
+
+}
+
+saveRDS(ht_list,file = "/maps/projects/thor/people/tbm613/hashtag.rds")
+saveRDS(toc_list,file = "/maps/projects/thor/people/tbm613/toc.rds")
+
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc.rds")
+ht_list <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/QC_cell_meta.rds")
+
+ht_list
