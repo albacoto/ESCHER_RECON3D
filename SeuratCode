@@ -1,122 +1,16 @@
-# Load necessary libraries
-library(hdf5r)
-library(Matrix)
+
+```{r}
 library(Seurat)
 
-# Define the batch name
-batch_name <- "Batch1Channel1"
-
-# Define the correct path
-h5_path <- paste0("/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/", 
-                  batch_name, 
-                  "/outs/raw_feature_bc_matrix.h5")
-
-# Open the HDF5 file
-h5file <- H5File$new(h5_path, mode = "r")
-
-# Extract barcodes, features, and feature types
-barcodes <- h5file[["matrix/barcodes"]][]
-features <- h5file[["matrix/features/name"]][]
-feature_types <- h5file[["matrix/features/feature_type"]][]
-
-# Convert feature types to character (they may be stored as raw bytes)
-feature_types <- as.character(feature_types)
-
-# Extract raw count matrix components
-data <- h5file[["matrix/data"]][]
-indices <- h5file[["matrix/indices"]][]
-indptr <- h5file[["matrix/indptr"]][]
-shape <- h5file[["matrix/shape"]][]
-
-# Convert to a sparse matrix
-sparse_matrix <- sparseMatrix(
-  i = indices + 1,  # R uses 1-based indexing
-  p = indptr,
-  x = data,
-  dims = shape
-)
-
-# Assign row and column names
-rownames(sparse_matrix) <- make.unique(features)  # Ensure unique gene names
-colnames(sparse_matrix) <- barcodes
-
-# Close the HDF5 file
-h5file$close()
-
-# --- Extract Gene Expression Data ---
-gene_indices <- which(feature_types == "Gene Expression")
-
-if (length(gene_indices) > 0) {
-  gene_matrix <- sparse_matrix[gene_indices, ]  # Subset only Gene Expression data
-  
-  # Create a Seurat object for Gene Expression
-  toc <- CreateSeuratObject(counts = gene_matrix, project = batch_name)
-} else {
-  stop("No Gene Expression data found!")
-}
-
-----
-# Remove cells with zero HTO counts
-hto_matrix <- hto_matrix[, Matrix::colSums(hto_matrix) > 0]
-
-# Check dimensions after filtering
-dim(hto_matrix)
-
-
-# Remove cells with only zero counts in all HTO features
-hto_matrix <- hto_matrix[, Matrix::colSums(hto_matrix) > 0]
-
-# Check the number of remaining cells after filtering
-dim(hto_matrix)
-
-----
-
-# --- Extract Antibody Capture Data ---
-hto_indices <- which(feature_types == "Antibody Capture")
-
-if (length(hto_indices) > 0) {
-  hto_matrix <- sparse_matrix[hto_indices, ]  # Subset only Antibody Capture data
-  
-  # Create Seurat object for HTO data
-  cellhash <- CreateSeuratObject(counts = hto_matrix, project = "cell_hashing", assay = "HTO")
-  cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
-
-  # Lowering the threshold to allow more positive cells
-  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.3)
-
-  # Extract HTO assignment
-  ht <- as.data.frame(cellhash$hash.ID)
-} else {
-  warning(paste("No Antibody Capture data found for", batch_name))
-  ht <- NULL
-}
-
-# Save results
-saveRDS(ht, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
-saveRDS(toc, file = paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
-
-# Reload and check saved data
-toc <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/toc_", batch_name, ".rds"))
-ht <- readRDS(paste0("/maps/projects/thor/people/qdz247/thesis/CMC/hashtag_", batch_name, ".rds"))
-
-# Load metadata
-metadata <- readRDS("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/full.CMC.metadata.rds")
-
-# Print outputs for verification
-print(ht)
-print(metadata)
-
-
-
-
---------------------------
 ht_list <- list() #store the information map cell_barcode to hashID (or sampleID or indiviualID)
 toc_list <- list() # store the raw count matrix
 
-for (i in 1:17) {
-  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/dataForZhenwen/CellRangerOutput/CMC/Set", 
-                 1, 
-                 "/outs/filtered_feature_bc_matrix/")
+# Loop through batches (Batch1Channel1 to Batch8Channel1)
+for (i in 1:8) {
+  # Construct the path dynamically
+  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch", 
+                 i, 
+                 "Channel1/outs/filtered_feature_bc_matrix/")
   counts <- Read10X(data.dir = path)
   
   
@@ -133,10 +27,25 @@ for (i in 1:17) {
 
 }
 
-saveRDS(ht_list,file = "/maps/projects/thor/people/tbm613/hashtag.rds")
-saveRDS(toc_list,file = "/maps/projects/thor/people/tbm613/toc.rds")
+saveRDS(ht_list,file = "/maps/projects/thor/people/tbm613/hashtag2.rds")
+saveRDS(toc_list,file = "/maps/projects/thor/people/tbm613/toc2.rds")
 
-toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc.rds")
-ht_list <- readRDS("/maps/projects/thor/people/qdz247/thesis/CMC/QC_cell_meta.rds")
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc2.rds")
+ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
 
 ht_list
+```
+
+
+----------
+library(Seurat)
+
+# Load gene expression data
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc.rds")
+
+# Load HTO classification data
+ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag.rds")
+
+# Check the structure
+class(toc_list)  # Should return "list"
+class(ht_list)   # Should return "list"
