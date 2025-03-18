@@ -88,6 +88,16 @@ seurat_obj <- NormalizeData(seurat_obj, assay = "HTO", normalization.method = "C
 seurat_obj <- HTODemux(seurat_obj, assay = "HTO", positive.quantile = 0.85)
 
 
+###CHECK FOR MISSING VALUES
+sum(is.na(GetAssayData(seurat_obj, assay = "HTO")))
+hto_data <- GetAssayData(seurat_obj, assay = "HTO")
+hto_data[is.na(hto_data)] <- 0  # Replace NAs with zeros
+seurat_obj[["HTO"]] <- CreateAssayObject(counts = hto_data)
+
+summary(GetAssayData(seurat_obj, assay = "HTO"))
+
+
+
 
 
 
