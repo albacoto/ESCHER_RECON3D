@@ -41,79 +41,8 @@ ht_list
 
 ### LOAD THE FILES
 
-library(Seurat)
-
-# Load gene expression data
-toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc2.rds")
-
-# Load HTO classification data
-ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
-
-# Check the structure
-class(toc_list)  # Should return "list"
-class(ht_list)   # Should return "list"
-
-
-### EXTRACT A SINGLE BATCH
-
-# Extract gene expression data for the first batch
-gene_matrix <- toc_list[[1]]
-
-# Extract HTO classification for the same batch
-ht_data <- ht_list[[1]]
-
-
-### CREATE THE SEURAT OBJECT
-
 seurat_obj <- CreateSeuratObject(counts = as.matrix(gene_matrix), project = "scRNAseq")
 
-### CHECK IF CELL BARCODES MATCH
-
-# Extract cell barcodes from both datasets
-barcodes_seurat <- colnames(seurat_obj)
-barcodes_hto <- rownames(ht_data)
-
-# Find how many barcodes match
-length(intersect(barcodes_seurat, barcodes_hto))  # Should be a large number
-
-= 10482
-Only 10,482 barcodes match, meaning some cells in seurat_obj do not have a corresponding HTO classification.
-
-
-### Align HTO Data to Seurat Barcodes
-# Reorder ht_data to match seurat_obj barcodes
-ht_data <- ht_data[match(barcodes_seurat, barcodes_hto), , drop = FALSE]
-
-# Verify alignment
-all.equal(rownames(ht_data), colnames(seurat_obj))  # Should return TRUE or minor differences
-
-
-ht_data[is.na(ht_data)] <- 0  # Replace NAs with zeros
-
-ht_matrix <- as.matrix(ht_data)
-
-
-###  Add HTO Assay to Seurat
-seurat_obj[["HTO"]] <- CreateAssayObject(counts = ht_matrix)
-
-###DATAFRAME SHOULD BE A MATRIX
-ht_data <- as.character(ht_data$`cellhash$hash.ID`)  # Convert factor to character
-names(ht_data) <- rownames(ht_list[[1]])  # Ensure rownames are preserved
-
-# Convert to a binary matrix (one-hot encoding)
-library(fastDummies)  # Install if needed: install.packages("fastDummies")
-hto_matrix <- fastDummies::dummy_cols(data.frame(HTO = ht_data), select_columns = "HTO", remove_first_dummy = TRUE)
-
-# Set rownames as barcodes
-rownames(hto_matrix) <- names(ht_data)
-hto_matrix <- as.matrix(hto_matrix)  # Convert to matrix
-
-dim(hto_matrix)  # Should match the number of cells x number of HTO categories
-head(hto_matrix)  # Should show binary (0/1) values
-
-seurat_obj[["HTO"]] <- CreateAssayObject(counts = t(hto_matrix))  # Transpose to match Seurat format
-
-Assays(seurat_obj)  # Should list "RNA" and "HTO"
 
 
 
