@@ -41,10 +41,10 @@ ht_list
 library(Seurat)
 
 # Load gene expression data
-toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc.rds")
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc2.rds")
 
 # Load HTO classification data
-ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag.rds")
+ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
 
 # Check the structure
 class(toc_list)  # Should return "list"
