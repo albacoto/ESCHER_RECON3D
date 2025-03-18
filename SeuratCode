@@ -38,6 +38,9 @@ ht_list
 
 
 ----------
+
+### LOAD THE FILES
+
 library(Seurat)
 
 # Load gene expression data
@@ -49,3 +52,19 @@ ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
 # Check the structure
 class(toc_list)  # Should return "list"
 class(ht_list)   # Should return "list"
+
+
+### EXTRACT A SINGLE BATCH
+
+# Extract gene expression data for the first batch
+gene_matrix <- toc_list[[1]]
+
+# Extract HTO classification for the same batch
+ht_data <- ht_list[[1]]
+
+
+### CREATE THE SEURAT OBJECT
+
+seurat_obj <- CreateSeuratObject(counts = as.matrix(gene_matrix), project = "scRNAseq")
+
+
