@@ -43,6 +43,52 @@ ht_list
 
 seurat_obj <- CreateSeuratObject(counts = as.matrix(gene_matrix), project = "scRNAseq")
 
+ht_labels <- as.character(ht_data$`cellhash$hash.ID`)  # Convert factor to character
+names(ht_labels) <- rownames(ht_list[[1]])  # Keep barcodes
+
+hto_matrix <- fastDummies::dummy_cols(data.frame(HTO = ht_labels), select_columns = "HTO", remove_first_dummy = TRUE)
+
+# Set rownames as barcodes
+rownames(hto_matrix) <- names(ht_labels)
+hto_matrix <- as.matrix(hto_matrix)  # Convert to matrix
+
+hto_matrix <- hto_matrix[, -1]  # Remove the first column (HTO labels)
+hto_matrix <- apply(hto_matrix, 2, as.numeric)  # Convert all values to numeric
+hto_matrix <- as.matrix(hto_matrix)  # Ensure it's a matrix
+
+common_barcodes <- intersect(rownames(hto_matrix), colnames(seurat_obj))
+
+colnames(hto_matrix)  # Should return a list of cell barcodes
+rownames(hto_matrix)  # Should return HTO categories (e.g., "CON1", "SZ1")
+
+rownames(ht_data) <- colnames(cellhash)  # Copy barcodes from `cellhash`
+
+library(fastDummies)
+
+# Convert HTO classifications into a one-hot encoded matrix
+hto_matrix <- fastDummies::dummy_cols(data.frame(HTO = ht_data$`cellhash$hash.ID`), 
+                                      select_columns = "HTO", 
+                                      remove_first_dummy = TRUE)
+
+# Assign barcodes as rownames
+rownames(hto_matrix) <- rownames(ht_data)
+
+# Convert to matrix
+hto_matrix <- as.matrix(hto_matrix)
+
+rownames(hto_matrix)  # Should now return barcodes
+
+seurat_obj[["HTO"]] <- CreateAssayObject(counts = t(hto_matrix))  # Transpose to match Seurat format
+
+
+Assays(seurat_obj)  # Should list "RNA" and "HTO"
+
+seurat_obj <- NormalizeData(seurat_obj, assay = "HTO", normalization.method = "CLR")
+
+seurat_obj <- HTODemux(seurat_obj, assay = "HTO", positive.quantile = 0.85)
+
+
+
 
 
 
