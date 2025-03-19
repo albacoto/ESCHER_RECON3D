@@ -95,7 +95,7 @@ for (i in 1:8) {
   gene_counts <- counts$`Gene Expression`
   hto_counts <- counts$`Antibody Capture`
   
-  # ✅ Step 1: Create Seurat object using HTO (Antibody Capture) data first
+  # Step 1: Create Seurat object using HTO (Antibody Capture) data first
   cellhash <- CreateSeuratObject(counts = hto_counts, project = paste0("Batch", i), assay = "HTO")
   
   # Normalize and demultiplex HTO data
@@ -105,25 +105,25 @@ for (i in 1:8) {
   # Store hash.ID mapping
   ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
   
-  # ✅ Step 2: Add the Gene Expression counts for all cells (NO subsetting yet)
+  # Step 2: Add the Gene Expression counts for all cells (NO subsetting yet)
   cellhash[["RNA"]] <- CreateAssayObject(counts = gene_counts[, colnames(cellhash)]) 
   
   # Store the gene expression counts for reference
   toc_list[[i]] <- as.data.frame(gene_counts[, colnames(cellhash)]) 
   
-  # ✅ Store each batch in a list
+  # Store each batch in a list
   batch_list[[i]] <- cellhash
 }
 
-# ✅ Step 3: Merge All Batches Into One Seurat Object (WITHOUT Subsetting Singlets)
+# Step 3: Merge All Batches Into One Seurat Object (WITHOUT Subsetting Singlets)
 seurat_obj <- merge(batch_list[[1]], y = batch_list[2:8], add.cell.ids = paste0("Batch", 1:8), project = "Merged_SZBD")
 
-# ✅ Save results
+# Save results
 saveRDS(seurat_obj, file = "/maps/projects/thor/people/tbm613/seurat_merged.rds")
 saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag5.rds")
 saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc5.rds")
 
-# ✅ Verify hash assignments after merging
+# Verify hash assignments after merging
 table(seurat_obj$HTO_classification.global)  # To see Singlets, Doublets, Negatives
 table(seurat_obj$hash.ID)  # Check how many SZ/CON/BD groups are in the merged dataset
 
