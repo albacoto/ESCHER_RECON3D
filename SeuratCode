@@ -75,6 +75,57 @@ saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc3.rds")
 ```
 
 
+3rd try:
+library(Seurat)
+
+ht_list <- list()  # Store mapping from cell barcode to hashID (sample/individual ID)
+toc_list <- list() # Store raw gene expression counts
+
+# Loop through batches (Batch1Channel1 to Batch8Channel1)
+for (i in 1:8) {
+  # Construct the path dynamically
+  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch", 
+                 i, 
+                 "Channel1/outs/filtered_feature_bc_matrix/")
+  
+  counts <- Read10X(data.dir = path)
+  
+  # Extract Gene Expression and HTO counts
+  gene_counts <- counts$`Gene Expression`
+  hto_counts <- counts$`Antibody Capture`
+  
+  # Step 1: Create Seurat object using HTO (Antibody Capture) data first
+  cellhash <- CreateSeuratObject(counts = hto_counts, project = paste0("Batch", i), assay = "HTO")
+  
+  # Normalize and demultiplex HTO data
+  cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
+  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
+  
+  # Store the classification results
+  ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
+
+  # Step 2: Subset to keep only Singlets
+  cellhash <- subset(cellhash, subset = HTO_classification.global == "Singlet")
+
+  # Step 3: Now add the Gene Expression counts to the filtered Seurat object
+  cellhash[["RNA"]] <- CreateAssayObject(counts = gene_counts[, colnames(cellhash)]) 
+
+  # Store the gene expression counts for reference
+  toc_list[[i]] <- as.data.frame(gene_counts[, colnames(cellhash)]) 
+}
+
+# Save results
+saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag4.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc4.rds")
+
+# Reload for verification
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc4.rds")
+ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag4.rds")
+
+# Check hash assignments
+ht_list
+
+
 ----------
 
 1. VERIFY THE HTO DEMULTIPLEXING RESULTS
