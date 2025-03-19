@@ -137,24 +137,10 @@ VlnPlot(seurat_obj,
         ncol = 2)
 
 
-2. SUBSET ONLY SZ & CON
-cellhash <- subset(cellhash, subset = grepl("^SZ|^CON", hash.ID))
-
-table(cellhash$hash.ID)
-
-
-
-Idents(cellhash) <- "HTO_classification.global"
-VlnPlot(cellhash, features = "nCount_RNA", pt.size = 0)  # Compare RNA counts across classifications
-
-
-table(seurat_obj$HTO_classification.global)
+2. REMOVE DOUBLETS AND NEGATIVES
 
 seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
+table(seurat_obj$HTO_classification.global)
 
-2. MERGE METADATA WITH SEURAT OBJECT
-
-metadata <- read.csv("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/metadata/SZBD.metadata.csv", row.names = 1)
-head(metadata)
-
+3. SUBSET ONLY SZ & CON
 
