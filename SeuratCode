@@ -27,11 +27,11 @@ for (i in 1:8) {
 
 }
 
-saveRDS(ht_list,file = "/maps/projects/thor/people/tbm613/hashtag2.rds")
-saveRDS(toc_list,file = "/maps/projects/thor/people/tbm613/toc2.rds")
+saveRDS(ht_list,file = "/maps/projects/thor/people/tbm613/hashtag5.rds")
+saveRDS(toc_list,file = "/maps/projects/thor/people/tbm613/toc5.rds")
 
-toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc2.rds")
-ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
+toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc5.rds")
+ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag5.rds")
 
 ht_list
 ```
