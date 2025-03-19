@@ -70,8 +70,8 @@ for (i in 1:8) {
 }
 
 # Save results
-saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag2.rds")
-saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc2.rds")
+saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag3.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc3.rds")
 ```
 
 
