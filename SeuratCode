@@ -89,8 +89,9 @@ table(seurat_obj$HTO_classification.global)
 
 seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
 
+2. MERGE METADATA WITH SEURAT OBJECT
 
-
-
+metadata <- readRDS("/maps/projects/thor//people/gjl413/projects/psychENCODE/data/metadata/SZBD.metadata.csv")
+metadata
 
 
