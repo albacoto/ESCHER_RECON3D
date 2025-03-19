@@ -146,4 +146,5 @@ table(seurat_obj$HTO_classification.global)
 
 unique(seurat_obj$hash.ID)
 seurat_obj <- subset(seurat_obj, subset = hash.ID %in% grep("^SZ|^CON", unique(seurat_obj$hash.ID), value = TRUE))
+table(seurat_obj$hash.ID)
 
