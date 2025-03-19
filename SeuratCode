@@ -85,6 +85,7 @@ Idents(seurat_obj) <- "HTO_classification.global"
 VlnPlot(seurat_obj, features = "nCount_RNA", pt.size = 0)  # Compare RNA counts across classifications
 
 
+table(seurat_obj$HTO_classification.global)
 
 
 
