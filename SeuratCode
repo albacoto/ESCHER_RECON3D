@@ -36,6 +36,44 @@ ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag2.rds")
 ht_list
 ```
 
+```{r} 1ST GENE EXPRESSION AND THEN ADD THE HTO COUNTS
+
+library(Seurat)
+
+ht_list <- list() # store mapping from cell barcode to hash ID
+toc_list <- list() # store raw gene expression counts
+
+# Loop through batches
+for (i in 1:8) {
+  path <- paste0("/maps/projects/thor/people/gjl413/projects/psychENCODE/data/SZBDMulti-Seq/CellrangerOutput_Intron/Batch", 
+                 i, 
+                 "Channel1/outs/filtered_feature_bc_matrix/")
+  counts <- Read10X(data.dir = path)
+
+  # Gene expression matrix
+  gene_counts <- counts$`Gene Expression`
+  hto_counts <- counts$`Antibody Capture`
+  
+  # Create Seurat object using gene expression counts
+  seurat_obj <- CreateSeuratObject(counts = gene_counts, project = paste0("Batch", i))
+  
+  # Add HTO data as a separate assay
+  seurat_obj[["HTO"]] <- CreateAssayObject(counts = hto_counts)
+  
+  # Normalize HTO data and perform demultiplexing
+  seurat_obj <- NormalizeData(seurat_obj, assay = "HTO", normalization.method = "CLR")
+  seurat_obj <- HTODemux(seurat_obj, assay = "HTO", positive.quantile = 0.85)
+  
+  # Store results
+  toc_list[[i]] <- as.data.frame(gene_counts)  # Save gene expression
+  ht_list[[i]] <- as.data.frame(seurat_obj$hash.ID)  # Save hash assignments
+}
+
+# Save results
+saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag2.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc2.rds")
+```
+
 
 ----------
 
