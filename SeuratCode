@@ -123,16 +123,18 @@ saveRDS(seurat_obj, file = "/maps/projects/thor/people/tbm613/seurat_merged.rds"
 saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag5.rds")
 saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc5.rds")
 
-# Verify hash assignments after merging
-table(seurat_obj$HTO_classification.global)  # To see Singlets, Doublets, Negatives
-table(seurat_obj$hash.ID)  # Check how many SZ/CON/BD groups are in the merged dataset
-
-
 ----------
 
 1. VERIFY THE HTO DEMULTIPLEXING RESULTS
 
-table(unlist(ht_list))
+table(seurat_obj$HTO_classification.global)
+table(seurat_obj$hash.ID)
+
+VlnPlot(seurat_obj, 
+        features = c("nFeature_RNA", "nCount_RNA"), 
+        group.by = "HTO_classification.global", 
+        pt.size = 0,  # Removes points
+        ncol = 2)
 
 
 2. SUBSET ONLY SZ & CON
