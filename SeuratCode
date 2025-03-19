@@ -144,3 +144,4 @@ table(seurat_obj$HTO_classification.global)
 
 3. SUBSET ONLY SZ & CON
 
+unique(seurat_obj$hash.ID)
