@@ -87,6 +87,8 @@ VlnPlot(seurat_obj, features = "nCount_RNA", pt.size = 0)  # Compare RNA counts 
 
 table(seurat_obj$HTO_classification.global)
 
+seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
+
 
 
 
