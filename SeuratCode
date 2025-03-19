@@ -78,7 +78,8 @@ saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc3.rds")
 3rd try:
 library(Seurat)
 
-ht_list <- list()  # Store mapping from cell barcode to hashID (sample/individual ID)
+batch_list <- list()  # Store Seurat objects from each batch
+ht_list <- list()  # Store hash.ID mapping
 toc_list <- list() # Store raw gene expression counts
 
 # Loop through batches (Batch1Channel1 to Batch8Channel1)
@@ -94,36 +95,37 @@ for (i in 1:8) {
   gene_counts <- counts$`Gene Expression`
   hto_counts <- counts$`Antibody Capture`
   
-  # Step 1: Create Seurat object using HTO (Antibody Capture) data first
+  # ✅ Step 1: Create Seurat object using HTO (Antibody Capture) data first
   cellhash <- CreateSeuratObject(counts = hto_counts, project = paste0("Batch", i), assay = "HTO")
   
   # Normalize and demultiplex HTO data
   cellhash <- NormalizeData(cellhash, assay = "HTO", normalization.method = "CLR")
-  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.85)
-  
-  # Store the classification results
+  cellhash <- HTODemux(cellhash, assay = "HTO", positive.quantile = 0.75)  # Adjusted to avoid excessive doublets
+
+  # Store hash.ID mapping
   ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
-
-  # Step 2: Subset to keep only Singlets
-  cellhash <- subset(cellhash, subset = HTO_classification.global == "Singlet")
-
-  # Step 3: Now add the Gene Expression counts to the filtered Seurat object
+  
+  # ✅ Step 2: Add the Gene Expression counts for all cells (NO subsetting yet)
   cellhash[["RNA"]] <- CreateAssayObject(counts = gene_counts[, colnames(cellhash)]) 
-
+  
   # Store the gene expression counts for reference
   toc_list[[i]] <- as.data.frame(gene_counts[, colnames(cellhash)]) 
+  
+  # ✅ Store each batch in a list
+  batch_list[[i]] <- cellhash
 }
 
-# Save results
-saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag4.rds")
-saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc4.rds")
+# ✅ Step 3: Merge All Batches Into One Seurat Object (WITHOUT Subsetting Singlets)
+seurat_obj <- merge(batch_list[[1]], y = batch_list[2:8], add.cell.ids = paste0("Batch", 1:8), project = "Merged_SZBD")
 
-# Reload for verification
-toc_list <- readRDS("/maps/projects/thor/people/tbm613/toc4.rds")
-ht_list <- readRDS("/maps/projects/thor/people/tbm613/hashtag4.rds")
+# ✅ Save results
+saveRDS(seurat_obj, file = "/maps/projects/thor/people/tbm613/seurat_merged.rds")
+saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag5.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc5.rds")
 
-# Check hash assignments
-ht_list
+# ✅ Verify hash assignments after merging
+table(seurat_obj$HTO_classification.global)  # To see Singlets, Doublets, Negatives
+table(seurat_obj$hash.ID)  # Check how many SZ/CON/BD groups are in the merged dataset
 
 
 ----------
