@@ -205,3 +205,8 @@ VlnPlot(seurat_obj,
         group.by = "HTO_classification.global", 
         pt.size = 0,  # Removes points
         ncol = 2)
+
+
+VISUALIZATION OF SEURAT:
+
+
