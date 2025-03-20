@@ -239,5 +239,17 @@ DimPlot(seurat_obj, reduction = "umap", group.by = "group")
 
 
 
+WHEN ANALYZING seurat_merged.rds:
+#Load Seurat Object
+seurat_obj <- readRDS("/maps/projects/thor/people/tbm613/seurat_merged.rds")
+#Check cell and gene counts
+dim(seurat_obj)
+#Check metadata
+head(seurat_obj@meta.data)
+#Check gene expression data
+head(rownames(seurat_obj[["RNA"]]@counts))
+
+
+
 
 
