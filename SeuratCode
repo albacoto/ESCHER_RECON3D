@@ -208,5 +208,21 @@ VlnPlot(seurat_obj,
 
 
 VISUALIZATION OF SEURAT:
+4. STANDARD scRNA-seq workflow
+
+DefaultAssay(seurat_obj)
+DefaultAssay(seurat_obj) <- "RNA"
+
+slotNames(seurat_obj@assays$RNA)
+dim(GetAssayData(seurat_obj, layer = "counts"))
+
+seurat_obj <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000, layer = "counts")
+
+# Normalize Data
+seurat_obj <- NormalizeData(seurat_obj, layer = "counts")
+
+# Scale Data
+seurat_obj <- ScaleData(seurat_obj, features = VariableFeatures(seurat_obj), layer = "counts")
+
 
 
