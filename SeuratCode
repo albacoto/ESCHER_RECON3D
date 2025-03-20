@@ -194,7 +194,13 @@ head(rownames(seurat_obj[["RNA"]]@counts))
 head(colnames(seurat_obj))
 
 
-2. SUBSET ONLY SZ & CON
+2. REMOVE DOUBLETS AND NEGATIVES
+
+seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
+table(seurat_obj$HTO_classification.global)
+
+
+3. SUBSET ONLY SZ & CON
 
 unique(seurat_obj$hash.ID)
 seurat_obj <- subset(seurat_obj, subset = hash.ID %in% grep("^SZ|^CON", unique(seurat_obj$hash.ID), value = TRUE))
@@ -205,9 +211,3 @@ VlnPlot(seurat_obj,
         group.by = "HTO_classification.global", 
         pt.size = 0,  # Removes points
         ncol = 2)
-
-
-3. REMOVE DOUBLETS AND NEGATIVES
-
-seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
-table(seurat_obj$HTO_classification.global)
