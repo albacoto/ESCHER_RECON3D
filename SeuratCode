@@ -196,6 +196,7 @@ VlnPlot(seurat_obj,
         ncol = 2)
 
 head(rownames(seurat_obj[["RNA"]]@counts))
+head(colnames(seurat_obj))
 
 
 2. REMOVE DOUBLETS AND NEGATIVES
