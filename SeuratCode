@@ -184,7 +184,7 @@ table(seurat_obj$hash.ID)
 
 ----------
 
-1. VERIFY THE HTO DEMULTIPLEXING RESULTS
+1. VERIFY THE HTO DEMULTIPLEXING RESULTS & gene names
 
 table(seurat_obj$HTO_classification.global)
 table(seurat_obj$hash.ID)
@@ -194,6 +194,8 @@ VlnPlot(seurat_obj,
         group.by = "HTO_classification.global", 
         pt.size = 0,  # Removes points
         ncol = 2)
+
+head(rownames(seurat_obj[["RNA"]]@counts))
 
 
 2. REMOVE DOUBLETS AND NEGATIVES
