@@ -141,14 +141,14 @@ for (i in 1:8) {
   
   counts <- Read10X(data.dir = path)  # Read raw data
   
-  # ✅ Extract Gene Expression and HTO counts
+  # Extract Gene Expression and HTO counts
   gene_counts <- counts$`Gene Expression`
   hto_counts <- counts$`Antibody Capture`
   
-  # ✅ Ensure Gene Names Are Assigned (before creating Seurat object)
+  # Ensure Gene Names Are Assigned (before creating Seurat object)
   rownames(gene_counts) <- rownames(counts$`Gene Expression`)  # Assign gene names
   
-  # ✅ Step 1: Create Seurat object using HTO data first
+  # Step 1: Create Seurat object using HTO data first
   cellhash <- CreateSeuratObject(counts = hto_counts, project = paste0("Batch", i), assay = "HTO")
   
   # Normalize and demultiplex HTO data
@@ -158,29 +158,23 @@ for (i in 1:8) {
   # Store hash.ID mapping
   ht_list[[i]] <- as.data.frame(cellhash$hash.ID)
   
-  # ✅ Step 2: Add Gene Expression Data to the Seurat Object (with correct gene names)
+  # Step 2: Add Gene Expression Data to the Seurat Object (with correct gene names)
   cellhash[["RNA"]] <- CreateAssayObject(counts = gene_counts[, colnames(cellhash)]) 
   
   # Store gene expression counts
   toc_list[[i]] <- as.data.frame(gene_counts[, colnames(cellhash)]) 
   
-  # ✅ Store each batch in a list
+  # Store each batch in a list
   batch_list[[i]] <- cellhash
 }
 
-# ✅ Step 3: Merge All Batches Into One Seurat Object
+# Step 3: Merge All Batches Into One Seurat Object
 seurat_obj <- merge(batch_list[[1]], y = batch_list[2:8], add.cell.ids = paste0("Batch", 1:8), project = "Merged_SZBD")
 
-# ✅ Save results
-saveRDS(seurat_obj, file = "/maps/projects/thor/people/tbm613/seurat_merged6.rds")
-saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag6.rds")
-saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc6.rds")
-
-# ✅ Verify Gene Names Are Correct
-head(rownames(seurat_obj[["RNA"]]@counts))  # Should show gene names
-
-# ✅ Verify Hash Assignments
-table(seurat_obj$hash.ID)
+# Save results
+saveRDS(seurat_obj, file = "/maps/projects/thor/people/tbm613/seurat_merged.rds")
+saveRDS(ht_list, file = "/maps/projects/thor/people/tbm613/hashtag.rds")
+saveRDS(toc_list, file = "/maps/projects/thor/people/tbm613/toc.rds")
 
 ----------
 
