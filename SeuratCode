@@ -288,3 +288,9 @@ seurat_obj <- RunUMAP(seurat_obj, dims = 1:10)
 seurat_obj$group <- ifelse(grepl("^SZ", seurat_obj$hash.ID), "SZ", "CON")
 DimPlot(seurat_obj, reduction = "umap", group.by = "group")
 
+# Annotate the clusters (cell types)
+cluster_markers <- FindAllMarkers(seurat_obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+head(cluster_markers)
+
+
+
