@@ -292,5 +292,6 @@ DimPlot(seurat_obj, reduction = "umap", group.by = "group")
 cluster_markers <- FindAllMarkers(seurat_obj, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 head(cluster_markers)
 
+FeaturePlot(seurat_obj, features = c("CUX2", "GLIS3", "ENSG00000233290", "ENSG00000229425", "TESPA1")) #with cell types I obtained
 
 
