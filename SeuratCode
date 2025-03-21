@@ -294,4 +294,6 @@ head(cluster_markers)
 
 FeaturePlot(seurat_obj, features = c("CUX2", "GLIS3", "ENSG00000233290", "ENSG00000229425", "TESPA1")) #with cell types I obtained
 
-
+# Differential expression (SZ vs CON)
+deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
+deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
