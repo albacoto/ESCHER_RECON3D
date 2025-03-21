@@ -302,7 +302,31 @@ new_ids <- paste0("Cluster", as.numeric(levels(seurat_obj)) + 1)
 names(new_ids) <- levels(seurat_obj)
 seurat_obj <- RenameIdents(seurat_obj, new_ids)
 
+seurat_obj$cluster_label <- Idents(seurat_obj)
+DimPlot(seurat_obj, reduction = "umap", label = TRUE, repel = TRUE)
+
 
 # Differential expression (SZ vs CON)
 deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
-deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
+
+# Create a results list to store DEGs
+deg_by_cluster <- list()
+
+# Loop through each cluster
+for (cluster_id in levels(seurat_obj)) {
+  
+  # Subset to one cluster
+  cluster_cells <- subset(seurat_obj, idents = cluster_id)
+  
+  # Check if both groups exist in this cluster (SZ and CON)
+  if (length(unique(cluster_cells$group)) == 2) {
+    
+    # Run DE analysis (SZ vs. CON) within this cluster
+    deg <- FindMarkers(cluster_cells, ident.1 = "SZ", ident.2 = "CON", group.by = "group", 
+                       logfc.threshold = 0.25, min.pct = 0.1)
+    
+    # Store the result
+    deg_by_cluster[[cluster_id]] <- deg
+  }
+}
+
