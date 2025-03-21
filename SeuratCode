@@ -330,3 +330,9 @@ for (cluster_id in levels(seurat_obj)) {
   }
 }
 
+
+for (cluster_name in names(deg_by_cluster)) {
+  write.csv(deg_by_cluster[[cluster_name]],
+            file = paste0("DEG_SZ_vs_CON_", cluster_name, ".csv"))
+}
+
