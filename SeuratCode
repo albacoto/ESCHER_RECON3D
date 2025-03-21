@@ -294,6 +294,15 @@ head(cluster_markers)
 
 FeaturePlot(seurat_obj, features = c("CUX2", "GLIS3", "ENSG00000233290", "ENSG00000229425", "TESPA1")) #with cell types I obtained
 
+# Label the clusters
+Idents(seurat_obj) <- "seurat_clusters"
+levels(seurat_obj)
+
+new_ids <- paste0("Cluster", as.numeric(levels(seurat_obj)) + 1)
+names(new_ids) <- levels(seurat_obj)
+seurat_obj <- RenameIdents(seurat_obj, new_ids)
+
+
 # Differential expression (SZ vs CON)
 deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
 deg_sz_vs_con <- FindMarkers(seurat_obj, ident.1 = "SZ", ident.2 = "CON", group.by = "group", logfc.threshold = 0.25)
