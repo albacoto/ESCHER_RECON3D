@@ -336,3 +336,6 @@ for (cluster_name in names(deg_by_cluster)) {
             file = paste0("DEG_SZ_vs_CON_", cluster_name, ".csv"))
 }
 
+head(rownames(deg_by_cluster[["Cluster3"]]))  # example: get top gene names
+FeaturePlot(seurat_obj, features = c("GENE1", "GENE2"))  # Replace with real genes
+
