@@ -339,3 +339,15 @@ for (cluster_name in names(deg_by_cluster)) {
 head(rownames(deg_by_cluster[["Cluster3"]]))  # example: get top gene names
 FeaturePlot(seurat_obj, features = c("GENE1", "GENE2"))  # Replace with real genes
 
+# Aditional plots
+1. 
+VlnPlot(seurat_obj, features = c("nFeature_RNA", "nCount_RNA"), group.by = "group", pt.size = 0)
+
+2. 
+top10 <- head(VariableFeatures(seurat_obj), 10)
+plot1 <- VariableFeaturePlot(seurat_obj)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+
+
+
