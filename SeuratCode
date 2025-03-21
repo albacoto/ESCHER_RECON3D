@@ -259,7 +259,14 @@ table(seurat_obj$hash.ID)
 #Check gene expression data
 head(rownames(seurat_obj[["RNA"]]@counts))
 
+# UMAP
+# Run Variable Features Selection
+DefaultAssay(seurat_obj)
+DefaultAssay(seurat_obj) <- "RNA"
 
+slotNames(seurat_obj@assays$RNA)
+dim(GetAssayData(seurat_obj, layer = "counts"))
 
+seurat_obj <- FindVariableFeatures(seurat_obj, selection.method = "vst", nfeatures = 2000, layer = "counts")
 
 
