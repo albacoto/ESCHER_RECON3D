@@ -368,7 +368,7 @@ metadata <- seurat_obj@meta.data
 full_matrix <- cbind(metadata, expr_matrix)
 
 # Save to file
-write.csv(full_matrix, file = "/maps/projects/thor/people/tbm613/seurat_merged_expression.csv", row.names = TRUE)
+write.csv(full_matrix, file = "seurat_merged_expression.csv", row.names = TRUE)
 
 
 
