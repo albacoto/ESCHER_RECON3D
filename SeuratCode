@@ -358,6 +358,18 @@ DimPlot(seurat_obj, reduction = "pca")
 
 ## TO CONVERT THE seurat_merged.rds to .csv file:
 
-seurat_obj <- readRDS("seurat_merged.rds")
+# Extract normalized expression data
+expr_matrix <- as.data.frame(t(as.matrix(seurat_obj[["RNA"]]@data)))
+
+# Get metadata
+metadata <- seurat_obj@meta.data
+
+# Combine into one big table
+full_matrix <- cbind(metadata, expr_matrix)
+
+# Save to file
+write.csv(full_matrix, file = "/maps/projects/thor/people/tbm613/seurat_merged_expression.csv", row.names = TRUE)
+
+
 
 
