@@ -32,6 +32,17 @@ http://bigg.ucsd.edu/models/Recon3D/
 Use sbml format for working with COBRApy
 BUT ESCHER works with json
 
+## OPEN A JUPYTER NOTEBOOK with specific CONDA ENVIORNMENT in SERVER (with cobra)
+
+```conda create -n cobra python=3.9 cobra notebook -c conda-forge```
+
+```conda activate cobra```
+
+Register the enviornment so it appears in jupyter:
+
+```python -m ipykernel install --user --name=cobra --display-name "Python (COBRA)"```
+
+
 ## INSTALL ESCHER
 Newest jupyter notebook is somwhere higher than 7. and that does not work with nbesxtension, so one approach to follow so the installation works, is to downgrade jupyter notebook to a version below 7.
 
