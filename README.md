@@ -79,6 +79,9 @@ Connect first the VPN.
 
 Put on the password
 
+### TO TRANSFER A FILE FROM THE COMPUTER TO THE SERVER
+```scp /path/to/file/ tbm613@thorcomp01fl.unicph.domain:/path/to/directory```
+
 
 ### JUPYTER NOTEBOOK
 ```ssh -L 8887:localhost:8887 tbm613@thorcomp01fl.unicph.domain```
