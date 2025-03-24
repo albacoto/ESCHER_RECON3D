@@ -371,5 +371,16 @@ full_matrix <- cbind(metadata, expr_matrix)
 write.csv(full_matrix, file = "seurat_merged_expression.csv", row.names = TRUE)
 
 
+full_matrix <- read.csv("seurat_merged_expression.csv", row.names = 1)
+dim(full_matrix)        # Number of rows (cells) × columns (metadata + genes)
+colnames(full_matrix)[1:10]   # See the first few columns (should be metadata)
+tail(colnames(full_matrix))   # See the last columns (should be genes)
+head(rownames(full_matrix))   # Check cell barcodes (should look like "BatchX_CELLID")
+head(full_matrix[, 1:10])     # Should show metadata
+head(full_matrix[, (ncol(full_matrix)-5):ncol(full_matrix)])  # Should show gene expression
+
+
+
+
 
 
