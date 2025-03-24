@@ -356,5 +356,8 @@ FeaturePlot(seurat_obj, features = c("RELN", "HTR2C", "CXCL14"))
 DimPlot(seurat_obj, reduction = "pca")
 
 
+## TO CONVERT THE seurat_merged.rds to .csv file:
+
+seurat_obj <- readRDS("seurat_merged.rds")
 
 
