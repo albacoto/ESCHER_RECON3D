@@ -127,6 +127,36 @@ seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet"
 # Step 2: Filter to SZ and CON cells
 seurat_obj <- subset(seurat_obj, subset = hash.ID %in% grep("^SZ|^CON", unique(seurat_obj$hash.ID), value = TRUE))
 
+FOR GETTING THE GENERAL FILE
+# Step 1: Get expression matrix (transpose for merging)
+expr_matrix <- GetAssayData(seurat_obj, assay = "RNA", slot = "counts")
+expr_df <- as.data.frame(t(as.matrix(expr_matrix)))  # transpose to cells x genes
+expr_df$cell_barcode <- rownames(expr_df)
+
+# Step 2: Pull condition directly from the Seurat object metadata
+meta_df <- seurat_obj@meta.data[, "hash.ID", drop = FALSE]
+meta_df$cell_barcode <- rownames(meta_df)
+
+# Step 3: Clean condition column to just "SZ" or "CON"
+meta_df$condition <- ifelse(grepl("^SZ", meta_df$hash.ID), "SZ",
+                            ifelse(grepl("^CON", meta_df$hash.ID), "CON", NA))
+
+# Step 4: Merge expression with metadata (matching barcodes already aligned)
+final_df <- merge(meta_df, expr_df, by = "cell_barcode")
+
+# Optional: Reorder
+final_df <- final_df[, c("cell_barcode", "condition", setdiff(colnames(final_df), c("cell_barcode", "condition", "hash.ID")))]
+
+# Set cell_barcode as rownames
+rownames(final_df) <- final_df$cell_barcode
+
+# Optionally remove the now redundant column
+final_df$cell_barcode <- NULL
+
+write.csv(final_df, "seurat_merged_expression.csv", row.names = TRUE)
+
+----
+FOR GETTING THE MEAN EXPRESSION OF EACH GENES
 # Optional: Rename condition column
 seurat_obj$condition <- seurat_obj$hash.ID  # or factorize it if needed
 table(seurat_obj$condition)
@@ -153,7 +183,7 @@ expr_final$gene <- rownames(expr_final)
 # Save it
 write.csv(expr_final, "mean_expression_SZ_CON.csv", row.names = FALSE)
 
-
+-----
 # UMAP
 # Run Variable Features Selection
 DefaultAssay(seurat_obj)
