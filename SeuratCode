@@ -113,24 +113,46 @@ DimPlot(seurat_obj, reduction = "umap", group.by = "group")
 
 
 WHEN ANALYZING seurat_merged.rds:
-#Load Seurat Object
+
+# Load libraries
+library(Seurat)
+library(dplyr)
+
+# Load Seurat object
 seurat_obj <- readRDS("/maps/projects/thor/people/tbm613/seurat_merged.rds")
 
-#Check cell and gene counts
-dim(seurat_obj)
-
-#Check metadata
-head(seurat_obj@meta.data)
-
-#Only want high-confidence assignments & SZ/CON
+# Step 1: Filter to singlets only
 seurat_obj <- subset(seurat_obj, subset = HTO_classification.global == "Singlet")
-table(seurat_obj$HTO_classification.global)  # Should now only contain "Singlet"
 
+# Step 2: Filter to SZ and CON cells
 seurat_obj <- subset(seurat_obj, subset = hash.ID %in% grep("^SZ|^CON", unique(seurat_obj$hash.ID), value = TRUE))
-table(seurat_obj$hash.ID)
 
-#Check gene expression data
-head(rownames(seurat_obj[["RNA"]]@counts))
+# Optional: Rename condition column
+seurat_obj$condition <- seurat_obj$hash.ID  # or factorize it if needed
+table(seurat_obj$condition)
+
+# Step 3: Compute average expression per gene for each group
+avg_expr <- AverageExpression(seurat_obj, group.by = "condition", return.seurat = FALSE)
+
+# Step 4: View results
+head(avg_expr$RNA)
+
+# Convert sparse matrix to dense dataframe
+expr_df <- as.data.frame(as.matrix(avg_expr$RNA))
+
+# Combine SZ and CON columns manually
+expr_df$mean_expr_SZ <- rowMeans(expr_df[, grepl("^SZ", colnames(expr_df))])
+expr_df$mean_expr_CON <- rowMeans(expr_df[, grepl("^CON", colnames(expr_df))])
+
+# Keep only relevant columns
+expr_final <- expr_df[, c("mean_expr_SZ", "mean_expr_CON")]
+
+# Add gene names as a column
+expr_final$gene <- rownames(expr_final)
+
+# Save it
+write.csv(expr_final, "mean_expression_SZ_CON.csv", row.names = FALSE)
+
 
 # UMAP
 # Run Variable Features Selection
